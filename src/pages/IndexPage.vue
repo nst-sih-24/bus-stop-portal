@@ -1,5 +1,7 @@
 <template>
   <q-page class="q-pa-md">
+    <pre>{{ vehicles }}</pre>
+
     <q-table :rows="buses" :columns="columns" row-key="name" flat bordered title="Upcoming Buses">
     </q-table>
   </q-page>
@@ -13,7 +15,8 @@
 // next bus time for same route
 // all buses from different routes cronologically
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { supabase } from 'boot/supabase'
 
 const columns = [
   { name: 'route', label: 'Route', align: 'center', field: 'route' },
@@ -58,4 +61,20 @@ const buses = ref([
     nextBusTime: '10:40',
   },
 ])
+
+const vehicles = ref([])
+
+const fetchVehicles = async () => {
+  const { data, error } = await supabase.from('vehicles').select('*')
+  if (error) {
+    console.error(error)
+  } else {
+    vehicles.value = data
+  }
+}
+
+onMounted(() => {
+  fetchVehicles()
+})
+
 </script>
